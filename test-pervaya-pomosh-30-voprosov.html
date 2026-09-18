@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тест: оказание первой помощи пострадавшим</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=PT+Sans:wght@400;700&display=swap">
+<style>
+  :root{
+    --ground:#eef4f4;--surface:#ffffff;--navy:#0e4a55;--navy-deep:#093640;
+    --blue:#1f8a99;--blue-soft:#e4f3f4;--blue-border:#b6dfe3;
+    --red:#c8362f;--red-soft:#fdeceb;--red-border:#f2bcb7;
+    --ink:#122127;--muted:#566670;--line:#e0eaeb;
+    --ok:#157a4b;--ok-bg:#e7f6ee;--ok-border:#a9dcc0;
+    --err:#c0392b;--err-bg:#fcecea;--err-border:#f0bcb5;
+    --radius:16px;--radius-sm:12px;
+    --shadow:0 10px 30px -12px rgba(14,74,85,.30);--shadow-sm:0 2px 8px -3px rgba(14,74,85,.22);
+    color-scheme:light;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:"PT Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Manrope","PT Sans",sans-serif;text-wrap:balance}
+  .wrap{max-width:680px;margin:0 auto;padding:24px 18px 64px;min-height:100%}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .screen{display:none}
+  .screen.active{display:block;animation:fade .32s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.screen.active{animation:none} *{transition:none!important}}
+
+  .start-head{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-deep) 100%);color:#fff;padding:38px 30px 32px;text-align:center;position:relative}
+  .start-head::after{content:"";position:absolute;top:18px;right:20px;width:34px;height:34px;background:
+    linear-gradient(#fff,#fff) center/12px 34px no-repeat,
+    linear-gradient(#fff,#fff) center/34px 12px no-repeat;
+    -webkit-mask:radial-gradient(circle,#000 99%,transparent);opacity:.14;border-radius:8px}
+  .eyebrow{font-family:"Manrope",sans-serif;text-transform:uppercase;letter-spacing:.13em;font-size:12px;font-weight:700;color:#8fd0d8;margin:0 0 12px}
+  .start-head h1{margin:0 0 8px;font-size:27px;font-weight:800;letter-spacing:-.01em}
+  .start-head .sub{margin:0 0 3px;font-size:16px;color:#cbe8ec;font-weight:400;line-height:1.4}
+  .start-head .sub2{margin:0;font-size:13.5px;color:#8fd0d8;font-weight:400}
+  .icons{display:flex;justify-content:center;gap:12px;margin:22px 0 4px;flex-wrap:wrap}
+  .icons span{width:50px;height:50px;display:grid;place-items:center;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);border-radius:14px}
+  .icons svg{width:27px;height:27px;stroke:#dcf0f2;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .start-body{padding:26px 30px 30px}
+  .lead{margin:0 0 20px;color:#2c4f57;font-size:15.5px}
+  .meta-row{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 20px}
+  .chip{flex:1 1 130px;background:var(--blue-soft);border:1px solid var(--blue-border);border-radius:var(--radius-sm);padding:14px 16px;text-align:center}
+  .chip b{display:block;font-family:"Manrope",sans-serif;font-size:22px;color:var(--navy);line-height:1.1}
+  .chip small{color:var(--muted);font-size:13px}
+  .note{background:var(--blue-soft);border:1px solid var(--blue-border);border-radius:var(--radius-sm);padding:14px 16px;font-size:14px;color:#2c4f57;margin:0 0 24px}
+  .note b{color:var(--navy)}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;font-family:"Manrope",sans-serif;font-weight:700;font-size:18px;padding:16px 22px;border-radius:14px;border:none;cursor:pointer;transition:background .18s,transform .06s,box-shadow .18s}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--navy);color:#fff;box-shadow:var(--shadow-sm)}
+  .btn-primary:hover{background:var(--navy-deep)}
+  .btn-primary:disabled{background:#adc3c6;color:#eef4f4;cursor:not-allowed;box-shadow:none}
+  .btn-ghost{background:var(--surface);color:var(--navy);border:1.6px solid var(--blue-border)}
+  .btn-ghost:hover{background:var(--blue-soft)}
+  .btn:focus-visible{outline:3px solid #74c2cd;outline-offset:2px}
+
+  .q-top{padding:18px 24px 16px;border-bottom:1px solid var(--line);background:var(--surface)}
+  .q-top-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:10px}
+  .q-count{font-family:"Manrope",sans-serif;font-weight:700;color:var(--navy);font-size:15px;white-space:nowrap}
+  .q-topic{color:var(--muted);font-size:12.5px;text-align:right}
+  .bar{height:8px;background:var(--ground);border-radius:99px;overflow:hidden}
+  .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--navy));border-radius:99px;transition:width .4s ease}
+
+  .q-body{padding:24px 24px 26px}
+  .q-multi-tag{display:inline-block;background:var(--blue-soft);color:var(--navy);border:1px solid var(--blue-border);font-family:"Manrope",sans-serif;font-weight:700;font-size:12px;letter-spacing:.03em;padding:4px 11px;border-radius:99px;margin-bottom:12px}
+  .q-text{font-size:19.5px;font-weight:700;font-family:"Manrope",sans-serif;line-height:1.42;margin:0 0 20px}
+  .opts{display:flex;flex-direction:column;gap:11px;margin-bottom:22px}
+  .opt{display:flex;align-items:flex-start;gap:13px;border:1.6px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;cursor:pointer;background:var(--surface);transition:border-color .15s,background .15s}
+  .opt:hover{border-color:var(--blue-border);background:#f6fbfb}
+  .opt.selected{border-color:var(--blue);background:var(--blue-soft)}
+  .opt .mark{flex:0 0 auto;width:30px;height:30px;border-radius:8px;border:1.6px solid var(--blue-border);display:grid;place-items:center;font-family:"Manrope",sans-serif;font-weight:700;color:var(--navy);font-size:15px;background:var(--surface)}
+  .opt.selected .mark{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .opt .txt{padding-top:3px}
+  .opt.locked{cursor:default}
+  .opt.reveal-ok{border-color:var(--ok-border);background:var(--ok-bg)}
+  .opt.reveal-ok .mark{background:var(--ok);border-color:var(--ok);color:#fff}
+  .opt.reveal-bad{border-color:var(--err-border);background:var(--err-bg)}
+  .opt.reveal-bad .mark{background:var(--err);border-color:var(--err);color:#fff}
+  .opt .res-ic{margin-left:auto;flex:0 0 auto;align-self:center}
+  .opt .res-ic svg{width:22px;height:22px}
+
+  .verdict{display:flex;align-items:center;gap:11px;font-family:"Manrope",sans-serif;font-weight:800;font-size:18px;padding:14px 16px;border-radius:var(--radius-sm);margin-bottom:14px;line-height:1.3}
+  .verdict svg{width:26px;height:26px;flex:0 0 auto}
+  .verdict.good{background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-border)}
+  .verdict.bad{background:var(--err-bg);color:var(--err);border:1px solid var(--err-border)}
+  .explain{background:var(--blue-soft);border:1px solid var(--blue-border);border-radius:var(--radius-sm);padding:15px 17px;margin-bottom:14px}
+  .explain .lbl{font-family:"Manrope",sans-serif;font-weight:700;color:var(--navy);font-size:13px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 5px}
+  .explain p{margin:0;font-size:15.5px;color:#274850}
+  .basis{font-size:13.5px;color:var(--muted);border-left:3px solid var(--blue-border);padding:2px 0 2px 12px;margin-bottom:20px}
+  .basis .lbl{display:block;font-family:"Manrope",sans-serif;font-weight:700;color:var(--navy);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+  .hidden{display:none}
+
+  .result-head{text-align:center;padding:38px 30px 30px;color:#fff;background:linear-gradient(160deg,var(--navy) 0%,var(--navy-deep) 100%)}
+  .ring-wrap{position:relative;width:180px;height:180px;margin:6px auto 18px}
+  .ring-wrap svg{transform:rotate(-90deg)}
+  .ring-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring-num b{font-family:"Manrope",sans-serif;font-size:44px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+  .ring-num small{color:#cbe8ec;font-size:14px;margin-top:3px}
+  .grade{font-family:"Manrope",sans-serif;font-weight:800;font-size:22px;margin:0 0 4px}
+  .grade-sub{margin:0;color:#cbe8ec;font-size:15px;max-width:92%;margin-inline:auto}
+  .score-split{display:flex;gap:12px;padding:22px 24px 6px}
+  .score-box{flex:1;border-radius:var(--radius-sm);padding:16px;text-align:center;border:1px solid}
+  .score-box.ok{background:var(--ok-bg);border-color:var(--ok-border)}
+  .score-box.er{background:var(--err-bg);border-color:var(--err-border)}
+  .score-box b{display:block;font-family:"Manrope",sans-serif;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+  .score-box.ok b{color:var(--ok)}
+  .score-box.er b{color:var(--err)}
+  .score-box small{font-size:13.5px;color:var(--muted)}
+  .result-actions{display:flex;flex-direction:column;gap:11px;padding:22px 24px 26px}
+  .mini-note{margin:2px 2px 6px;font-size:12.5px;color:var(--muted);line-height:1.45;text-align:center}
+
+  .review-head{padding:22px 24px 8px}
+  .review-head h2{margin:0 0 4px;font-size:22px;color:var(--navy)}
+  .review-head p{margin:0;color:var(--muted);font-size:14.5px}
+  .rev-list{padding:12px 20px 20px;display:flex;flex-direction:column;gap:16px}
+  .rev-item{border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px 17px}
+  .rev-item .rq{font-family:"Manrope",sans-serif;font-weight:700;font-size:16px;line-height:1.4;margin:0 0 12px}
+  .rev-line{display:flex;gap:9px;font-size:15px;margin-bottom:8px;align-items:flex-start}
+  .rev-line .tag{flex:0 0 auto;font-family:"Manrope",sans-serif;font-weight:700;font-size:12px;padding:2px 9px;border-radius:6px;margin-top:2px}
+  .tag.your{background:var(--err-bg);color:var(--err)}
+  .tag.right{background:var(--ok-bg);color:var(--ok)}
+  .rev-item .explain{margin:12px 0 10px}
+  .rev-item .basis{margin-bottom:2px}
+  .rev-empty{padding:30px 24px 34px;text-align:center;color:var(--ok);font-family:"Manrope",sans-serif;font-weight:700}
+  .footer-note{text-align:center;font-size:12.5px;color:#7f929a;margin:18px 6px 0;line-height:1.5}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+
+    <!-- START -->
+    <section id="screen-start" class="screen active">
+      <div class="start-head">
+        <p class="eyebrow">Проверка знаний · Первая помощь</p>
+        <h1>Оказание первой помощи пострадавшим</h1>
+        <p class="sub">Учебная самопроверка для работников</p>
+        <p class="sub2">По действующему законодательству РФ (2026 г.)</p>
+        <div class="icons" aria-hidden="true">
+          <span title="Первая помощь"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M12 9.5v6M9 12.5h6"/><path d="M8.5 6V4.5A1.5 1.5 0 0 1 10 3h4a1.5 1.5 0 0 1 1.5 1.5V6"/></svg></span>
+          <span title="Сердечно-лёгочная реанимация"><svg viewBox="0 0 24 24"><path d="M20.5 9.5c0-2.5-2-4.5-4.4-4.5-1.6 0-3 .9-3.6 2.2C11.9 5.9 10.5 5 8.9 5 6.5 5 4.5 7 4.5 9.5c0 .5.1 1 .2 1.4h4l1.3-2.4 2.2 5 1.4-2.6h4.5c.1-.4.2-.9.2-1.4z"/><path d="M4.9 11c1.3 3 4.6 5.5 7.1 7.4 2.5-1.9 5.8-4.4 7.1-7.4"/></svg></span>
+          <span title="Остановка кровотечения"><svg viewBox="0 0 24 24"><path d="M12 3.5s6 6.4 6 10.5a6 6 0 0 1-12 0c0-4.1 6-10.5 6-10.5z"/></svg></span>
+          <span title="Вызов скорой помощи"><svg viewBox="0 0 24 24"><path d="M5 4h3l1.5 4.5-2 1.5a12 12 0 0 0 6 6l1.5-2 4.5 1.5V19a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 1-2z"/></svg></span>
+          <span title="Перевязка"><svg viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="8" rx="4" transform="rotate(45 12 12)"/><path d="M9.5 9.5l5 5M12 8.5l3.5 3.5M8.5 12l3.5 3.5"/></svg></span>
+          <span title="Безопасность"><svg viewBox="0 0 24 24"><path d="M12 3.5 21 19H3z"/><line x1="12" y1="10" x2="12" y2="14"/><line x1="12" y1="16.5" x2="12" y2="16.6"/></svg></span>
+        </div>
+      </div>
+      <div class="start-body">
+        <p class="lead">Проверьте знание порядка, перечня состояний и последовательности мероприятий по оказанию первой помощи — в объёме, установленном действующим законодательством для лиц без медицинского образования.</p>
+        <div class="meta-row">
+          <div class="chip"><b>30</b><small>вопросов</small></div>
+          <div class="chip"><b>4</b><small>варианта ответа</small></div>
+          <div class="chip"><b>80%</b><small>порог зачёта</small></div>
+        </div>
+        <p class="note"><b>Учебная самопроверка.</b> Вопросы основаны исключительно на действующих нормативных актах: Приказ Минздрава России от 03.05.2024 № 220н «Об утверждении Порядка оказания первой помощи» (действует с 01.09.2024), ст. 31 Федерального закона от 21.11.2011 № 323-ФЗ (в ред. Федерального закона № 135-ФЗ), Постановление Правительства РФ от 24.12.2021 № 2464 (в ред. Постановления Правительства РФ № 805, действует с 31.08.2026) — в части обучения по оказанию первой помощи. Варианты ответов перемешиваются при каждом прохождении. Тест не заменяет практическое обучение с использованием тренажёров.</p>
+        <button class="btn btn-primary" id="btn-start">Начать тест</button>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="screen-quiz" class="screen">
+      <div class="q-top">
+        <div class="q-top-row">
+          <span class="q-count" id="q-count">Вопрос 1 из 30</span>
+          <span class="q-topic" id="q-topic"></span>
+        </div>
+        <div class="bar"><i id="q-bar"></i></div>
+      </div>
+      <div class="q-body">
+        <div class="q-multi-tag hidden" id="q-multi">Выберите все правильные варианты</div>
+        <h2 class="q-text" id="q-text"></h2>
+        <div class="opts" id="q-opts"></div>
+        <div id="q-feedback" class="hidden">
+          <div class="verdict" id="q-verdict"></div>
+          <div class="explain">
+            <p class="lbl">Пояснение</p>
+            <p id="q-explain"></p>
+          </div>
+          <p class="basis"><span class="lbl">Основание</span><span id="q-basis"></span></p>
+        </div>
+        <button class="btn btn-primary" id="btn-answer" disabled>Ответить</button>
+        <button class="btn btn-primary hidden" id="btn-next">Следующий вопрос</button>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="screen-result" class="screen">
+      <div class="result-head">
+        <div class="ring-wrap">
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            <circle cx="90" cy="90" r="78" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="14"/>
+            <circle id="ring-fg" cx="90" cy="90" r="78" fill="none" stroke="#5fd39a" stroke-width="14" stroke-linecap="round" stroke-dasharray="490" stroke-dashoffset="490"/>
+          </svg>
+          <div class="ring-num">
+            <b id="res-percent">0%</b>
+            <small id="res-fraction">0 из 30</small>
+          </div>
+        </div>
+        <p class="grade" id="res-grade"></p>
+        <p class="grade-sub" id="res-grade-sub"></p>
+      </div>
+      <div class="score-split">
+        <div class="score-box ok"><b id="res-ok">0</b><small>Правильных ответов</small></div>
+        <div class="score-box er"><b id="res-err">0</b><small>Ошибок</small></div>
+      </div>
+      <div class="result-actions">
+        <p class="mini-note">Учебная самопроверка. Результат не является официальным протоколом проверки знаний и не подтверждает прохождение обязательного обучения по оказанию первой помощи.</p>
+        <button class="btn btn-ghost" id="btn-review">Разобрать ошибки</button>
+        <button class="btn btn-primary" id="btn-restart">Пройти тест ещё раз</button>
+      </div>
+    </section>
+
+    <!-- REVIEW -->
+    <section id="screen-review" class="screen">
+      <div class="review-head">
+        <h2>Разбор ошибок</h2>
+        <p id="rev-sub"></p>
+      </div>
+      <div class="rev-list" id="rev-list"></div>
+      <div class="result-actions">
+        <button class="btn btn-ghost" id="btn-back-result">Назад к результату</button>
+        <button class="btn btn-primary" id="btn-restart2">Пройти тест ещё раз</button>
+      </div>
+    </section>
+
+  </div>
+  <p class="footer-note">Материал носит справочный характер и предназначен для самостоятельной проверки знаний. При оказании первой помощи действуйте в объёме своей подготовки и в соответствии с действующим Порядком оказания первой помощи (Приказ Минздрава России № 220н).</p>
+</div>
+
+<script>
+"use strict";
+var LETTERS = ["А","Б","В","Г"];
+
+// Каноническое хранение: opts + correct (индексы). Порядок вариантов перемешивается при показе.
+var QUESTIONS = [
+  {
+    topic:"Правовые основы",
+    multi:false,
+    q:"Что такое первая помощь в соответствии с Федеральным законом № 323-ФЗ?",
+    opts:[
+      "Комплекс мероприятий, направленных на сохранение и поддержание жизни и здоровья пострадавших, до оказания медицинской помощи",
+      "Вид медицинской помощи, которую оказывает только врач",
+      "Лечение заболеваний и травм в медицинской организации",
+      "Выдача пострадавшему лекарственных препаратов по назначению врача"
+    ],
+    correct:[0],
+    explain:"Первая помощь — это комплекс мероприятий, направленных на сохранение и поддержание жизни и здоровья пострадавших, оказываемых до оказания медицинской помощи. Это не медицинская помощь и не лечение: она оказывается на месте происшествия в объёме установленного Порядка.",
+    basis:"ст. 31 Федерального закона от 21.11.2011 № 323-ФЗ (в ред. Федерального закона от 14.04.2023 № 135-ФЗ, действует с 01.09.2024)"
+  },
+  {
+    topic:"Кто оказывает",
+    multi:false,
+    q:"Может ли работник, не входящий в перечень лиц, обязанных оказывать первую помощь, оказывать её пострадавшему?",
+    opts:[
+      "Да, он вправе оказывать первую помощь при наличии соответствующей подготовки и (или) навыков",
+      "Нет, первую помощь имеют право оказывать только медицинские работники",
+      "Да, но только с письменного разрешения руководителя",
+      "Нет, это запрещено законом для лиц без медицинского образования"
+    ],
+    correct:[0],
+    explain:"Закон закрепляет перечень лиц, обязанных оказывать первую помощь (сотрудники ОВД, спасатели, пожарные, военнослужащие, водители и др.). Остальные граждане вправе оказывать первую помощь при наличии соответствующей подготовки и (или) навыков. Это право, а не обязанность.",
+    basis:"ст. 31 Федерального закона от 21.11.2011 № 323-ФЗ (в ред. № 135-ФЗ)"
+  },
+  {
+    topic:"Нормативная база",
+    multi:false,
+    q:"Каким документом утверждены перечень состояний и перечень мероприятий по оказанию первой помощи, действующие в настоящее время?",
+    opts:[
+      "Приказ Минздрава России от 03.05.2024 № 220н",
+      "Трудовой кодекс РФ",
+      "Постановление Правительства РФ № 2464",
+      "СанПиН по охране труда"
+    ],
+    correct:[0],
+    explain:"Действующий Порядок оказания первой помощи, перечень состояний (Приложение № 1) и перечень мероприятий с последовательностью их проведения (Приложение № 2) утверждены Приказом Минздрава России от 03.05.2024 № 220н, действующим с 01.09.2024 (взамен приказа № 477н).",
+    basis:"Приказ Минздрава России от 03.05.2024 № 220н; ст. 31 Федерального закона № 323-ФЗ"
+  },
+  {
+    topic:"Перечень состояний",
+    multi:true,
+    q:"Выберите состояния, при которых оказывается первая помощь (по Приложению № 1 к Приказу № 220н):",
+    opts:[
+      "Отсутствие сознания",
+      "Наружные кровотечения",
+      "Острые психологические реакции на стресс",
+      "Насморк и лёгкое недомогание"
+    ],
+    correct:[0,1,2],
+    explain:"В перечень состояний входят, в частности: отсутствие сознания, наружные кровотечения и острые психологические реакции на стресс (новое состояние в редакции 2024 года). Насморк и лёгкое недомогание не относятся к состояниям, при которых оказывается первая помощь.",
+    basis:"Приложение № 1 к Приказу Минздрава России от 03.05.2024 № 220н"
+  },
+  {
+    topic:"Перечень состояний",
+    multi:true,
+    q:"Какие ещё состояния включены в перечень состояний, при которых оказывается первая помощь?",
+    opts:[
+      "Укусы или ужаливания ядовитых животных",
+      "Судорожный приступ, сопровождающийся потерей сознания",
+      "Отравления",
+      "Повышение температуры тела при простуде"
+    ],
+    correct:[0,1,2],
+    explain:"Перечень включает укусы или ужаливания ядовитых животных, судорожный приступ с потерей сознания и отравления. Повышение температуры при простуде в перечень состояний для первой помощи не входит.",
+    basis:"Приложение № 1 к Приказу Минздрава России от 03.05.2024 № 220н"
+  },
+  {
+    topic:"Последовательность действий",
+    multi:false,
+    q:"С какого мероприятия начинается оказание первой помощи согласно установленной последовательности?",
+    opts:[
+      "С оценки обстановки и обеспечения безопасных условий для оказания первой помощи",
+      "С проведения сердечно-лёгочной реанимации",
+      "С наложения кровоостанавливающего жгута",
+      "С вызова родственников пострадавшего"
+    ],
+    correct:[0],
+    explain:"Первым мероприятием является оценка обстановки и обеспечение безопасных условий: определение угрожающих факторов, обеспечение собственной безопасности, устранение или прекращение действия повреждающих факторов, перемещение пострадавшего при необходимости. Помощь нельзя начинать, не убедившись в собственной безопасности.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (мероприятие 1)"
+  },
+  {
+    topic:"Определение сознания",
+    multi:false,
+    q:"Как правильно определить наличие сознания у пострадавшего?",
+    opts:[
+      "Обратиться к нему, аккуратно взять за плечи, легко встряхнуть и задать вопрос",
+      "Резко ударить по щеке",
+      "Облить лицо холодной водой",
+      "Немедленно поднести к носу нашатырный спирт"
+    ],
+    correct:[0],
+    explain:"Наличие сознания определяют, обратившись к пострадавшему, аккуратно взяв за плечи и слегка встряхнув, задав простой вопрос. Грубые и травмирующие приёмы (удары, обливание, немедленный нашатырь) не предусмотрены Порядком.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (определение признаков жизни)"
+  },
+  {
+    topic:"Проверка дыхания",
+    multi:false,
+    q:"Как проверяют наличие дыхания у пострадавшего без сознания?",
+    opts:[
+      "Восстанавливают проходимость дыхательных путей и в течение примерно 10 секунд смотрят, слушают и ощущают дыхание",
+      "Подносят ко рту зеркальце ровно на одну минуту",
+      "Считают пульс на запястье в течение минуты",
+      "Дают понюхать нашатырный спирт и ждут реакции"
+    ],
+    correct:[0],
+    explain:"Сначала восстанавливают проходимость дыхательных путей (запрокидывание головы, подъём подбородка), затем в течение около 10 секунд определяют наличие нормального дыхания — визуально (движение грудной клетки), на слух и ощущением выдоха на своей щеке.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (определение признаков жизни)"
+  },
+  {
+    topic:"Проходимость дыхательных путей",
+    multi:false,
+    q:"Как восстанавливают проходимость дыхательных путей у пострадавшего без сознания?",
+    opts:[
+      "Запрокидывают голову с подъёмом подбородка",
+      "Подкладывают под голову высокую подушку",
+      "Прижимают подбородок к груди",
+      "Дают выпить воды, чтобы «прочистить» горло"
+    ],
+    correct:[0],
+    explain:"Для восстановления проходимости дыхательных путей запрокидывают голову с одновременным подъёмом подбородка. Сгибание головы к груди и высокая подушка, наоборот, перекрывают дыхательные пути; поить пострадавшего без сознания недопустимо.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н"
+  },
+  {
+    topic:"Признаки жизни отсутствуют",
+    multi:false,
+    q:"Пострадавший без сознания, дыхание и кровообращение отсутствуют. Что нужно делать?",
+    opts:[
+      "Немедленно вызвать скорую помощь (103 или 112) и начать сердечно-лёгочную реанимацию",
+      "Придать устойчивое боковое положение и ждать скорую",
+      "Дать понюхать нашатырный спирт",
+      "Напоить водой и укрыть одеялом"
+    ],
+    correct:[0],
+    explain:"При отсутствии признаков жизни (нет сознания, дыхания, кровообращения) необходимо немедленно организовать вызов скорой медицинской помощи и без промедления приступить к сердечно-лёгочной реанимации.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (сердечно-лёгочная реанимация)"
+  },
+  {
+    topic:"СЛР: соотношение",
+    multi:false,
+    q:"Каково соотношение компрессий грудной клетки и искусственных вдохов при сердечно-лёгочной реанимации взрослого?",
+    opts:[
+      "30 компрессий и 2 вдоха",
+      "15 компрессий и 2 вдоха",
+      "5 компрессий и 1 вдох",
+      "10 компрессий и 2 вдоха"
+    ],
+    correct:[0],
+    explain:"Реанимацию взрослого проводят циклами: 30 компрессий грудной клетки, затем 2 искусственных вдоха, и так до появления признаков жизни, прибытия скорой или до невозможности продолжать.",
+    basis:"Приказ Минздрава России от 03.05.2024 № 220н (Порядок, сердечно-лёгочная реанимация)"
+  },
+  {
+    topic:"СЛР: техника",
+    multi:false,
+    q:"Какими должны быть глубина и частота компрессий грудной клетки взрослого?",
+    opts:[
+      "Глубина 5–6 см, частота 100–120 надавливаний в минуту",
+      "Глубина 1–2 см, частота 60 надавливаний в минуту",
+      "Глубина 8–10 см, частота 150 надавливаний в минуту",
+      "Глубина и частота значения не имеют"
+    ],
+    correct:[0],
+    explain:"Эффективные компрессии выполняются на глубину 5–6 см с частотой 100–120 надавливаний в минуту, с полным расправлением грудной клетки между надавливаниями и минимальными паузами.",
+    basis:"Приказ Минздрава России от 03.05.2024 № 220н (Порядок, сердечно-лёгочная реанимация)"
+  },
+  {
+    topic:"СЛР: положение рук",
+    multi:false,
+    q:"Куда устанавливают руки при проведении компрессий грудной клетки взрослому?",
+    opts:[
+      "На центр грудной клетки — нижнюю половину грудины",
+      "На левую половину груди, над областью сердца",
+      "На верхнюю часть живота",
+      "На нижние рёбра сбоку"
+    ],
+    correct:[0],
+    explain:"Основание ладони устанавливают на центр грудной клетки (нижнюю половину грудины), вторую руку — сверху; давление осуществляют прямыми руками. Надавливание на живот или рёбра сбоку неэффективно и травмоопасно.",
+    basis:"Приказ Минздрава России от 03.05.2024 № 220н (Порядок, сердечно-лёгочная реанимация)"
+  },
+  {
+    topic:"СЛР: прекращение",
+    multi:true,
+    q:"В каких случаях можно прекратить сердечно-лёгочную реанимацию?",
+    opts:[
+      "У пострадавшего появились явные признаки жизни (дыхание, движения)",
+      "Прибыла бригада скорой помощи и приняла реанимацию на себя",
+      "Спасающий физически не в состоянии продолжать реанимацию",
+      "Прошло две минуты, а результата нет"
+    ],
+    correct:[0,1,2],
+    explain:"Реанимацию продолжают до появления признаков жизни, прибытия и принятия мероприятий бригадой скорой помощи (или другими обязанными лицами) либо до полного физического истощения спасающего. Прекращать реанимацию только потому, что «прошло время», нельзя.",
+    basis:"Приказ Минздрава России от 03.05.2024 № 220н (Порядок, сердечно-лёгочная реанимация)"
+  },
+  {
+    topic:"Без сознания, но дышит",
+    multi:false,
+    q:"Пострадавший без сознания, но дышит нормально. Какие действия правильны?",
+    opts:[
+      "Придать устойчивое боковое положение, контролировать дыхание, вызвать скорую помощь",
+      "Оставить лежать на спине без наблюдения",
+      "Немедленно начать компрессии грудной клетки",
+      "Посадить и дать выпить воды"
+    ],
+    correct:[0],
+    explain:"При наличии дыхания и отсутствии сознания пострадавшему придают устойчивое боковое положение (для профилактики западения языка и аспирации), обеспечивают проходимость дыхательных путей, постоянно контролируют состояние и вызывают скорую. Компрессии при сохранённом дыхании не проводят.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (поддержание проходимости дыхательных путей, оптимальное положение тела)"
+  },
+  {
+    topic:"Наружное кровотечение",
+    multi:false,
+    q:"С какого приёма начинают остановку наружного кровотечения?",
+    opts:[
+      "С прямого давления на рану",
+      "Сразу с наложения кровоостанавливающего жгута",
+      "С промывания раны водой",
+      "С присыпания раны землёй или мукой"
+    ],
+    correct:[0],
+    explain:"Остановку наружного кровотечения начинают с прямого давления на рану; при недостаточности применяют давящую повязку и лишь затем, при сильном кровотечении, — кровоостанавливающий жгут. Промывать рану водой и присыпать посторонними веществами нельзя.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (обзорный осмотр, временная остановка наружного кровотечения)"
+  },
+  {
+    topic:"Кровоостанавливающий жгут",
+    multi:false,
+    q:"В каком случае применяют кровоостанавливающий жгут?",
+    opts:[
+      "При сильном (артериальном) кровотечении из конечности, когда прямое давление и давящая повязка неэффективны",
+      "При любом, даже незначительном кровотечении",
+      "Только для остановки кровотечения на шее",
+      "Жгут в первой помощи не применяется"
+    ],
+    correct:[0],
+    explain:"Жгут — крайняя мера при сильном (артериальном) кровотечении из конечности, когда прямое давление и давящая повязка не останавливают кровь. При небольших кровотечениях достаточно давящей повязки.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н"
+  },
+  {
+    topic:"Правила наложения жгута",
+    multi:true,
+    q:"Что правильно при наложении кровоостанавливающего жгута?",
+    opts:[
+      "Накладывать выше раны, поверх одежды или тканевой подкладки",
+      "Указать точное время наложения (записка под жгут или на видном месте)",
+      "Затягивать до полной остановки кровотечения",
+      "Закрыть жгут одеждой и держать его без ограничения времени"
+    ],
+    correct:[0,1,2],
+    explain:"Жгут накладывают выше раны, поверх одежды или подкладки, затягивают до остановки кровотечения и обязательно фиксируют точное время наложения. Жгут должен оставаться на виду, а время его нахождения ограничено — закрывать одеждой и «забывать» о нём нельзя.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н"
+  },
+  {
+    topic:"Носовое кровотечение",
+    multi:false,
+    q:"Какие действия правильны при носовом кровотечении у пострадавшего в сознании?",
+    opts:[
+      "Усадить, слегка наклонить голову вперёд, прижать крылья носа, приложить холод к переносице",
+      "Запрокинуть голову назад",
+      "Уложить пострадавшего на спину",
+      "Глубоко затампонировать нос и уложить пострадавшего"
+    ],
+    correct:[0],
+    explain:"При носовом кровотечении пострадавшего усаживают, слегка наклоняют голову вперёд, прижимают крылья носа и прикладывают холод к переносице. Запрокидывание головы и укладывание на спину приводят к затеканию крови в дыхательные пути.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (временная остановка наружного кровотечения)"
+  },
+  {
+    topic:"Инородное тело: частичная закупорка",
+    multi:false,
+    q:"Взрослый подавился, но кашляет, может говорить и дышать. Что делать?",
+    opts:[
+      "Побуждать продолжать откашливаться и наблюдать за состоянием",
+      "Сразу с силой наносить удары по спине",
+      "Немедленно выполнять толчки в живот (приём Геймлиха)",
+      "Дать запить водой"
+    ],
+    correct:[0],
+    explain:"Если пострадавший кашляет, говорит и дышит — закупорка частичная. Нужно побуждать его откашливаться и наблюдать. Активные приёмы (удары по спине, толчки в живот) применяют только при полной закупорке, когда кашель и дыхание невозможны.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (восстановление проходимости дыхательных путей)"
+  },
+  {
+    topic:"Инородное тело: полная закупорка",
+    multi:false,
+    q:"Инородное тело полностью перекрыло дыхательные пути: пострадавший не может кашлять, говорить и дышать. Что делать?",
+    opts:[
+      "Нанести до 5 ударов основанием ладони между лопатками, при неэффективности — до 5 толчков в живот (приём Геймлиха)",
+      "Уложить пострадавшего и ждать скорую помощь",
+      "Дать выпить воды, чтобы протолкнуть предмет",
+      "Похлопать по щекам и растереть уши"
+    ],
+    correct:[0],
+    explain:"При полной закупорке чередуют до 5 ударов между лопатками и до 5 толчков в живот (приём Геймлиха) до удаления инородного тела. Если пострадавший теряет сознание — начинают сердечно-лёгочную реанимацию и вызывают скорую.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н"
+  },
+  {
+    topic:"Ожог: правильные действия",
+    multi:true,
+    q:"Какие действия правильны при термическом ожоге?",
+    opts:[
+      "Прекратить действие поражающего фактора",
+      "Охлаждать обожжённое место чистой прохладной водой (ориентировочно до 20 минут)",
+      "Накрыть ожог чистой (стерильной) повязкой",
+      "Смазать ожог маслом или мазью и вскрыть пузыри"
+    ],
+    correct:[0,1,2],
+    explain:"При термическом ожоге прекращают действие поражающего фактора, охлаждают место чистой прохладной водой и накрывают чистой повязкой. Смазывать ожог маслом, жиром, мазями и вскрывать пузыри нельзя — это усугубляет повреждение и повышает риск инфекции.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (мероприятия при травмах и воздействии температур)"
+  },
+  {
+    topic:"Ожог: чего нельзя делать",
+    multi:true,
+    q:"Выберите действия, которые НЕДОПУСТИМЫ при оказании первой помощи при ожоге:",
+    opts:[
+      "Вскрывать образовавшиеся пузыри",
+      "Наносить на ожог масло, жир или мазь",
+      "Отрывать прилипшую к ожогу одежду",
+      "Накрывать ожог чистой повязкой"
+    ],
+    correct:[0,1,2],
+    explain:"Нельзя вскрывать пузыри, наносить масло/жир/мази и отрывать прилипшую к ожогу одежду (её оставляют на месте, обрезая вокруг). Накрывать ожог чистой повязкой, наоборот, правильно — это допустимое и нужное действие.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н"
+  },
+  {
+    topic:"Химический ожог",
+    multi:false,
+    q:"Как оказывают первую помощь при химическом ожоге кожи жидким веществом?",
+    opts:[
+      "Обильно и продолжительно промывать проточной водой (если для вещества нет прямого запрета контакта с водой)",
+      "Нейтрализовать кислоту щёлочью прямо на коже",
+      "Сразу смазать поражённое место мазью",
+      "Туго забинтовать, не смывая вещество"
+    ],
+    correct:[0],
+    explain:"Химическое вещество удаляют обильным продолжительным промыванием проточной водой (при отсутствии прямого запрета контакта данного вещества с водой). Пытаться нейтрализовать вещество на коже нельзя — реакция усилит повреждение.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (мероприятия при воздействии химических веществ)"
+  },
+  {
+    topic:"Отравление через рот",
+    multi:false,
+    q:"Пострадавший без сознания при подозрении на отравление через рот. Допустимо ли давать ему питьё или вызывать рвоту?",
+    opts:[
+      "Нет: при отсутствии сознания нельзя поить и вызывать рвоту; обеспечивают проходимость дыхательных путей, устойчивое боковое положение и вызывают скорую",
+      "Да, нужно немедленно вызвать рвоту",
+      "Да, следует дать выпить молока",
+      "Да, дать активированный уголь через рот"
+    ],
+    correct:[0],
+    explain:"Пострадавшему без сознания ничего не дают через рот и не вызывают рвоту — это приведёт к попаданию содержимого в дыхательные пути. Обеспечивают проходимость дыхательных путей, придают устойчивое боковое положение, контролируют дыхание и вызывают скорую.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (мероприятия при отравлении)"
+  },
+  {
+    topic:"Переохлаждение",
+    multi:true,
+    q:"Какие действия правильны при общем переохлаждении пострадавшего?",
+    opts:[
+      "Переместить в тёплое место и снять мокрую одежду",
+      "Укрыть пострадавшего, применить термоизоляцию",
+      "Дать тёплое питьё, если пострадавший в сознании",
+      "Растереть снегом и дать алкоголь для согревания"
+    ],
+    correct:[0,1,2],
+    explain:"При переохлаждении прекращают действие холода, перемещают в тепло, снимают мокрую одежду, укрывают и применяют термоизоляцию, при сохранённом сознании дают тёплое питьё. Растирание снегом и алкоголь недопустимы — они усиливают теплопотерю и ухудшают состояние.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (мероприятия при воздействии низких температур)"
+  },
+  {
+    topic:"Судорожный приступ",
+    multi:false,
+    q:"Как действовать при судорожном приступе с потерей сознания?",
+    opts:[
+      "Оберегать от травм (убрать опасные предметы, защитить голову), не удерживать силой и не разжимать челюсти; после приступа придать устойчивое боковое положение и вызвать скорую",
+      "Разжать зубы твёрдым предметом и вставить его в рот",
+      "Крепко удерживать руки и ноги, прекращая судороги",
+      "Облить пострадавшего холодной водой"
+    ],
+    correct:[0],
+    explain:"Во время приступа пострадавшего оберегают от травм, защищают голову, не удерживают силой и ничего не вставляют в рот. После приступа, когда восстановится дыхание, придают устойчивое боковое положение, контролируют состояние и вызывают скорую.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (помощь при судорожном приступе); Приложение № 1 (состояние 8)"
+  },
+  {
+    topic:"Психологическая поддержка",
+    multi:false,
+    q:"Что входит в первую помощь при острой реакции на стресс?",
+    opts:[
+      "Психологическая поддержка: спокойное общение, обеспечение безопасности, недопущение причинения вреда себе и окружающим",
+      "Выдача пострадавшему успокоительных таблеток",
+      "Оставить пострадавшего одного до приезда скорой",
+      "Резко привести в чувство пощёчиной"
+    ],
+    correct:[0],
+    explain:"При острой психологической реакции на стресс оказывают психологическую поддержку: спокойно общаются, обеспечивают безопасность пострадавшего и окружающих, не допускают причинения вреда. Выдавать лекарства при первой помощи нельзя.",
+    basis:"Приложение № 1 (состояние 9) и Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н; ст. 31 Федерального закона № 323-ФЗ"
+  },
+  {
+    topic:"Вызов скорой помощи",
+    multi:true,
+    q:"Что необходимо сообщить при вызове скорой медицинской помощи (103 / 112)?",
+    opts:[
+      "Место происшествия — адрес, ориентиры",
+      "Что случилось, число пострадавших и их состояние",
+      "Оставаться на связи и отвечать на вопросы диспетчера",
+      "Поставленный диагноз и перечень необходимых лекарств"
+    ],
+    correct:[0,1,2],
+    explain:"Диспетчеру сообщают место происшествия, что произошло, число пострадавших и их состояние, отвечают на его вопросы и остаются на связи. Ставить диагноз и определять лекарства не входит в задачи оказывающего первую помощь.",
+    basis:"Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н (вызов скорой медицинской помощи)"
+  },
+  {
+    topic:"Пределы первой помощи",
+    multi:false,
+    q:"Что НЕ относится к мероприятиям первой помощи?",
+    opts:[
+      "Постановка диагноза и введение лекарственных препаратов инъекциями",
+      "Вызов скорой медицинской помощи",
+      "Временная остановка наружного кровотечения",
+      "Придание пострадавшему оптимального положения тела"
+    ],
+    correct:[0],
+    explain:"Первая помощь не включает постановку диагноза, инъекции и иные медицинские манипуляции — это компетенция медицинских работников. Допускается лишь помощь пострадавшему в приёме ранее назначенных ему лекарственных препаратов. Вызов скорой, остановка кровотечения и придание положения тела — это мероприятия первой помощи.",
+    basis:"ст. 31 Федерального закона № 323-ФЗ; Приложение № 2 к Приказу Минздрава России от 03.05.2024 № 220н"
+  }
+];
+
+var TOTAL = QUESTIONS.length;
+var state = { idx:0, order:[], selected:[], locked:false, answers:[] };
+
+function $(id){ return document.getElementById(id); }
+function show(screenId){
+  var list = document.querySelectorAll(".screen");
+  for(var i=0;i<list.length;i++) list[i].classList.remove("active");
+  $(screenId).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function arraysEqual(a,b){
+  if(a.length!==b.length) return false;
+  var sa=a.slice().sort(function(x,y){return x-y;});
+  var sb=b.slice().sort(function(x,y){return x-y;});
+  for(var i=0;i<sa.length;i++) if(sa[i]!==sb[i]) return false;
+  return true;
+}
+function shuffled(n){
+  var a=[]; for(var i=0;i<n;i++) a.push(i);
+  for(var j=a.length-1;j>0;j--){ var k=Math.floor(Math.random()*(j+1)); var t=a[j]; a[j]=a[k]; a[k]=t; }
+  return a;
+}
+var ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+var ICON_BAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+
+function renderQuestion(){
+  var q = QUESTIONS[state.idx];
+  state.selected = [];
+  state.locked = false;
+  state.order = shuffled(q.opts.length);
+
+  $("q-count").textContent = "Вопрос " + (state.idx+1) + " из " + TOTAL;
+  $("q-topic").textContent = q.topic;
+  $("q-bar").style.width = ((state.idx / TOTAL) * 100) + "%";
+  $("q-text").textContent = q.q;
+  $("q-multi").classList.toggle("hidden", !q.multi);
+
+  var wrap = $("q-opts");
+  wrap.innerHTML = "";
+  for(var k=0;k<state.order.length;k++){
+    (function(k){
+      var original = state.order[k];
+      var el = document.createElement("div");
+      el.className = "opt";
+      el.setAttribute("role", q.multi ? "checkbox":"radio");
+      el.setAttribute("tabindex","0");
+      el.setAttribute("aria-checked","false");
+      el.innerHTML = '<span class="mark">'+LETTERS[k]+'</span><span class="txt">'+q.opts[original]+'</span><span class="res-ic"></span>';
+      el.addEventListener("click", function(){ toggleOption(k); });
+      el.addEventListener("keydown", function(ev){
+        if(ev.key===" "||ev.key==="Enter"){ ev.preventDefault(); toggleOption(k); }
+      });
+      wrap.appendChild(el);
+    })(k);
+  }
+  $("q-feedback").classList.add("hidden");
+  $("btn-answer").classList.remove("hidden");
+  $("btn-answer").disabled = true;
+  $("btn-next").classList.add("hidden");
+  $("btn-next").textContent = (state.idx === TOTAL-1) ? "Показать результат" : "Следующий вопрос";
+}
+
+function toggleOption(k){
+  if(state.locked) return;
+  var q = QUESTIONS[state.idx];
+  var pos = state.selected.indexOf(k);
+  if(q.multi){
+    if(pos===-1) state.selected.push(k); else state.selected.splice(pos,1);
+  } else {
+    state.selected = (pos===-1) ? [k] : [];
+  }
+  var opts = $("q-opts").children;
+  for(var j=0;j<opts.length;j++){
+    var sel = state.selected.indexOf(j)!==-1;
+    opts[j].classList.toggle("selected", sel);
+    opts[j].setAttribute("aria-checked", sel ? "true":"false");
+  }
+  $("btn-answer").disabled = state.selected.length===0;
+}
+
+function submitAnswer(){
+  if(state.locked || state.selected.length===0) return;
+  state.locked = true;
+  var q = QUESTIONS[state.idx];
+
+  var selOriginal = state.selected.map(function(k){ return state.order[k]; });
+  var isCorrect = arraysEqual(selOriginal, q.correct);
+
+  var opts = $("q-opts").children;
+  var rightLetters = [];
+  var rightPieces = [];
+  var yourPieces = [];
+  var sortedSel = state.selected.slice().sort(function(a,b){return a-b;});
+  for(var k=0;k<opts.length;k++){
+    var original = state.order[k];
+    opts[k].classList.add("locked");
+    opts[k].classList.remove("selected");
+    opts[k].setAttribute("tabindex","-1");
+    var isRight = q.correct.indexOf(original)!==-1;
+    var wasPicked = state.selected.indexOf(k)!==-1;
+    var icHost = opts[k].querySelector(".res-ic");
+    if(isRight){
+      opts[k].classList.add("reveal-ok");
+      icHost.innerHTML = ICON_OK; icHost.style.color = "var(--ok)";
+      rightLetters.push(LETTERS[k]);
+      rightPieces.push(LETTERS[k]+") "+q.opts[original]);
+    } else if(wasPicked){
+      opts[k].classList.add("reveal-bad");
+      icHost.innerHTML = ICON_BAD; icHost.style.color = "var(--err)";
+    }
+  }
+  rightLetters.sort();
+  for(var s=0;s<sortedSel.length;s++){
+    var kk = sortedSel[s];
+    yourPieces.push(LETTERS[kk]+") "+q.opts[state.order[kk]]);
+  }
+
+  state.answers[state.idx] = {
+    correct: isCorrect,
+    yourText: yourPieces.join("; "),
+    rightText: rightPieces.sort().join("; ")
+  };
+
+  var v = $("q-verdict");
+  if(isCorrect){
+    v.className = "verdict good";
+    v.innerHTML = ICON_OK + "<span>Правильно</span>";
+  } else {
+    v.className = "verdict bad";
+    var label = q.multi ? "Неправильно. Правильные варианты: " : "Неправильно. Правильный ответ: ";
+    v.innerHTML = ICON_BAD + "<span>"+label+rightLetters.join(", ")+"</span>";
+  }
+  $("q-explain").textContent = q.explain;
+  $("q-basis").textContent = q.basis;
+  $("q-feedback").classList.remove("hidden");
+  $("btn-answer").classList.add("hidden");
+  $("btn-next").classList.remove("hidden");
+  $("q-bar").style.width = (((state.idx+1) / TOTAL) * 100) + "%";
+}
+
+function nextQuestion(){
+  if(state.idx < TOTAL-1){ state.idx++; renderQuestion(); }
+  else { showResult(); }
+}
+
+function showResult(){
+  var ok = 0;
+  for(var i=0;i<state.answers.length;i++){ if(state.answers[i] && state.answers[i].correct) ok++; }
+  var err = TOTAL - ok;
+  var exact = (ok/TOTAL)*100;
+  var pct = Math.round(exact);
+  $("res-percent").textContent = pct + "%";
+  $("res-fraction").textContent = ok + " из " + TOTAL;
+  $("res-ok").textContent = ok;
+  $("res-err").textContent = err;
+
+  var grade, sub, ringColor;
+  if(exact>=90){ grade="Отлично"; sub="Высокий уровень знаний по оказанию первой помощи."; ringColor="#5fd39a"; }
+  else if(exact>=80){ grade="Зачёт"; sub="Основные требования усвоены."; ringColor="#5fd39a"; }
+  else if(exact>=70){ grade="Удовлетворительно"; sub="Рекомендуется повторить отдельные темы."; ringColor="#f2c14e"; }
+  else { grade="Не пройден"; sub="Рекомендуется повторно изучить Порядок оказания первой помощи."; ringColor="#ef8a7f"; }
+  $("res-grade").textContent = grade;
+  $("res-grade-sub").textContent = sub;
+
+  var ring = $("ring-fg");
+  ring.setAttribute("stroke", ringColor);
+  var circ = 490;
+  ring.style.transition = "none";
+  ring.style.strokeDashoffset = circ;
+  show("screen-result");
+  setTimeout(function(){
+    ring.style.transition = "stroke-dashoffset 1s ease";
+    ring.style.strokeDashoffset = circ - (circ * pct/100);
+  }, 120);
+  $("btn-review").textContent = (err>0) ? "Разобрать ошибки" : "Показать разбор";
+}
+
+function showReview(){
+  var list = $("rev-list");
+  list.innerHTML = "";
+  var wrong = [];
+  for(var i=0;i<QUESTIONS.length;i++){ if(state.answers[i] && !state.answers[i].correct) wrong.push(i); }
+  $("rev-sub").textContent = wrong.length===0 ? "Ошибок нет" : (wrong.length===1 ? "1 вопрос с ошибкой" : wrong.length + " вопрос(ов) с ошибками");
+  if(wrong.length===0){
+    list.innerHTML = '<div class="rev-empty">Отличный результат! Все вопросы решены правильно.</div>';
+  }
+  for(var w=0;w<wrong.length;w++){
+    var qi = wrong[w];
+    var q = QUESTIONS[qi];
+    var ans = state.answers[qi];
+    var item = document.createElement("div");
+    item.className = "rev-item";
+    item.innerHTML =
+      '<p class="rq">'+(qi+1)+'. '+q.q+'</p>'+
+      '<div class="rev-line"><span class="tag your">Ваш ответ</span><span>'+(ans.yourText||"—")+'</span></div>'+
+      '<div class="rev-line"><span class="tag right">Верно</span><span>'+ans.rightText+'</span></div>'+
+      '<div class="explain"><p class="lbl">Почему и как действовать</p><p>'+q.explain+'</p></div>'+
+      '<p class="basis"><span class="lbl">Основание</span>'+q.basis+'</p>';
+    list.appendChild(item);
+  }
+  show("screen-review");
+}
+
+function restart(){
+  state = { idx:0, order:[], selected:[], locked:false, answers:[] };
+  var ring = $("ring-fg");
+  ring.style.transition = "none";
+  ring.style.strokeDashoffset = 490;
+  show("screen-start");
+}
+
+$("btn-start").addEventListener("click", function(){ renderQuestion(); show("screen-quiz"); });
+$("btn-answer").addEventListener("click", submitAnswer);
+$("btn-next").addEventListener("click", nextQuestion);
+$("btn-review").addEventListener("click", showReview);
+$("btn-restart").addEventListener("click", restart);
+$("btn-restart2").addEventListener("click", restart);
+$("btn-back-result").addEventListener("click", function(){ show("screen-result"); });
+</script>
+
+</body>
+</html>
